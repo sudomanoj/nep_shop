@@ -43,6 +43,7 @@ THIRD_PARTY_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
+    'django_filters',
     'jazzmin',
 ]
 
@@ -155,13 +156,31 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ],
 }
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # Access token lifetime (e.g., 15 minutes)
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Access token lifetime (e.g., 15 minutes)
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # Refresh token lifetime (e.g., 7 days)
     'ROTATE_REFRESH_TOKENS': True,  # Enable token rotation (to rotate refresh tokens)
     'BLACKLIST_AFTER_ROTATION': True,  # Blacklist the previous refresh token after rotation
     'UPDATE_LAST_LOGIN': True,  # Update the user's last login time
+}
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,  # Disable session-based authentication if you use tokens
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': "Enter 'Bearer <your_token>'",
+        },
+    },
 }

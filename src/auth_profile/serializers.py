@@ -51,27 +51,12 @@ class StoreSerializer(serializers.ModelSerializer):
             'description',
             'rating',
         ]
-    
-class SellerSerializer(serializers.ModelSerializer):
-    id = serializers.UUIDField(read_only=True)
-    user = UserCreateSerializer()
-    store = StoreSerializer()
-    
-    class Meta:
-        model = Seller
-        fields = [
-            'id',
-            'first_name',
-            'last_name',
-            'user',
-            'store',
-        ]
         
 
 class SellerSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
-    user = serializers.UUIDField()
-    store = serializers.UUIDField()
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    store = serializers.PrimaryKeyRelatedField(queryset=Store.objects.all())
     
     class Meta:
         model = Seller

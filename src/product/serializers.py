@@ -3,6 +3,7 @@ from product.models import (Product,
                             Category,
                             ProductImage,
                             )
+from auth_profile.models import Seller
 
 class CategorySerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
@@ -17,19 +18,20 @@ class CategorySerializer(serializers.ModelSerializer):
         
 class ProductImageSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
     
     class Meta:
         model = ProductImage
         fields = [
             'id',
+            'title',
             'image',
             'product',
         ]
     
 class ProductSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
-    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
-    images = ProductImageSerializer(many=True)
+    seller = serializers.PrimaryKeyRelatedField(queryset=Seller.objects.all())
     
     class Meta:
         model = Product
@@ -38,13 +40,6 @@ class ProductSerializer(serializers.ModelSerializer):
             'name',
             'description',
             'price',
-            'category',
-            'images',
+            'thumbnail',
+            'seller',
         ]
-        
-    def create(self, validated_data):
-        images_data = self.context.get('view').request.FILES
-        product = Product.objects.create(**validated_data)
-        for image_data in images_data.values():
-            ProductImage.objects.create(product=product, image=image_data)
-        return product
