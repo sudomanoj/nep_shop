@@ -4,7 +4,7 @@ from rest_framework.generics import (
     )
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet, ModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from auth_profile.serializers import (
     UserCreateSerializer,
     UserLoginSerializer,
@@ -27,7 +27,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class UserViewSet(ViewSet):
-    
+    permission_classes = [AllowAny,]
     @swagger_auto_schema(
         request_body=UserCreateSerializer,
         responses={201: "User created successfully", 400: "Invalid data"}
@@ -70,7 +70,6 @@ class UserViewSet(ViewSet):
 
 
 class StoreViewSet(ModelViewSet):
-    # permission_classes = [IsAuthenticated]
     serializer_class = StoreSerializer
     queryset = Store.objects.all()
     
@@ -79,7 +78,11 @@ class SellerViewSet(ModelViewSet):
     serializer_class = SellerSerializer
     queryset = Seller.objects.all()
     
-    @swagger_auto_schema(request_body=SellerSerializer)
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+    # @swagger_auto_schema(request_body=SellerSerializer)
+    # def create(self, request, *args, **kwargs):
+    #     return super().create(request, *args, **kwargs)
+    
+
+    
+
     

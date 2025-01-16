@@ -91,7 +91,8 @@ class Product(TimeStampMixin):
         )
     
     stock = models.PositiveIntegerField(
-        verbose_name='stock'
+        verbose_name='stock',
+        default=0
         )
     
     thumbnail = models.ImageField(
