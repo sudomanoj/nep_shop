@@ -17,9 +17,6 @@ class CategorySerializer(serializers.ModelSerializer):
         ]
         
 class ProductImageSerializer(serializers.ModelSerializer):
-    id = serializers.UUIDField(read_only=True)
-    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
-    
     class Meta:
         model = ProductImage
         fields = [
@@ -32,6 +29,12 @@ class ProductImageSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
     seller = serializers.PrimaryKeyRelatedField(queryset=Seller.objects.all())
+    images = serializers.SerializerMethodField()
+    
+    
+    def get_images(self, obj):
+        images = obj.images.all()
+        return ProductImageSerializer(images, many=True).data
     
     class Meta:
         model = Product
@@ -42,4 +45,5 @@ class ProductSerializer(serializers.ModelSerializer):
             'price',
             'thumbnail',
             'seller',
+            'images',
         ]
