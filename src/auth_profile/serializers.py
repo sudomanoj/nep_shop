@@ -1,12 +1,20 @@
 from rest_framework import serializers
-from auth_profile.models import (User,
-                                 Seller,
+from django.contrib.auth import get_user_model
+from auth_profile.models import (Seller,
                                  Buyer,
                                  Store,
                                  )
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
+class UserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'phone_number']
+        
 class UserCreateSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
     password = serializers.CharField(write_only=True, validators=[validate_password])
@@ -54,9 +62,9 @@ class StoreSerializer(serializers.ModelSerializer):
         
 
 class SellerSerializer(serializers.ModelSerializer):
-    id = serializers.UUIDField(read_only=True)
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    store = serializers.PrimaryKeyRelatedField(queryset=Store.objects.all())
+    # id = serializers.UUIDField(read_only=True)
+    user_info = UserCreateSerializer(read_only=True)
+    # store = serializers.PrimaryKeyRelatedField(queryset=Store.objects.all())
     
     class Meta:
         model = Seller
@@ -66,32 +74,33 @@ class SellerSerializer(serializers.ModelSerializer):
             'last_name',
             'user',
             'store',
+            'user_info',
         ]
         
-    def validate_user(self, user_id):
-        """
-        Validate that the user exists and return the user instance.
-        """
-        try:
-            user = User.objects.get(id=user_id)
-            return user
-        except User.DoesNotExist:
-            raise serializers.ValidationError("User does not exist")
+    # def validate_user(self, user_id):
+    #     """
+    #     Validate that the user exists and return the user instance.
+    #     """
+    #     try:
+    #         user = User.objects.get(id=user_id)
+    #         return user
+    #     except User.DoesNotExist:
+    #         raise serializers.ValidationError("User does not exist")
 
-    def validate_store(self, store_id):
-        """
-        Validate that the store exists and return the store instance.
-        """
-        try:
-            store = Store.objects.get(id=store_id)
-            return store
-        except Store.DoesNotExist:
-            raise serializers.ValidationError("Store does not exist")
+    # def validate_store(self, store_id):
+    #     """
+    #     Validate that the store exists and return the store instance.
+    #     """
+    #     try:
+    #         store = Store.objects.get(id=store_id)
+    #         return store
+    #     except Store.DoesNotExist:
+    #         raise serializers.ValidationError("Store does not exist")
     
     
-    def create(self, validated_data):
-        # Directly use the validated user and store instances
-        user = validated_data.pop('user')
-        store = validated_data.pop('store')
-        seller = Seller.objects.create(user=user, store=store, **validated_data)
-        return seller
+    # def create(self, validated_data):
+    #     # Directly use the validated user and store instances
+    #     user = validated_data.pop('user')
+    #     store = validated_data.pop('store')
+    #     seller = Seller.objects.create(user=user, store=store, **validated_data)
+    #     return seller

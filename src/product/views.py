@@ -26,7 +26,7 @@ class CategoryViewSet(ModelViewSet):
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     filterset_class = ProductFilter
     parser_classes = [parsers.MultiPartParser]
     
@@ -34,7 +34,7 @@ class ProductViewSet(ModelViewSet):
 class ProductImageViewSet(ModelViewSet):
     queryset = ProductImage.objects.all()
     serializer_class = ProductImageSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     parser_classes = [parsers.MultiPartParser]
     
     
