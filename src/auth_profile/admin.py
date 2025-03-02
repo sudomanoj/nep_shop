@@ -7,55 +7,61 @@ from auth_profile.models import (
     Store,
 )
 from .forms import (
-    UserForm,
-    UserCustomCreationForm,
+    CustomAdminAuthenticationForm,
 )
-
+from nep_shop.mixins import BaseAdmin
+from django.contrib.admin import AdminSite
 # Register your models here.
 
-@admin.register(User)
+
+class CustomAdminSite(AdminSite):
+    site_header = 'Nep Shop Admin'
+    site_title = 'Nep Shop Admin'
+    index_title = 'Nep Shop Admin'
+    login_form = CustomAdminAuthenticationForm  # Use custom form
+
+custom_admin_site = CustomAdminSite(name="custom_admin")
+admin.site = custom_admin_site   
+
+@admin.register(User, site=custom_admin_site)
 class UserAdmin(DjangoUserAdmin):
     list_display = ['email', 'phone_number', 'is_active', 'is_staff', 'date_joined']
     search_fields = ['email', 'phone_number']
     list_filter = ['is_active', 'is_staff']
     readonly_fields = ['date_joined']
     fieldsets = (
-        (None, {'fields': ('email', 'phone_number', 'password')}),
+        ('General', {'fields': ('email', 'phone_number', 'password')}),
         ('Permissions', {'fields': ('is_active', 'is_staff')}),
     )
     add_fieldsets = (
-        (None, {
+        ('General', {
             'classes': ('wide',),
-            'fields': ('email', 'phone_number', 'password1', 'password2', 'is_active', 'is_staff')}
+            'fields': ('email', 'phone_number', 'password1', 'password2')}
         ),
+        ('Permissions', {
+            'classes': ('wide',),
+            'fields': ('is_active', 'is_staff')}
+        )
     )
     ordering = ['email']
     filter_horizontal = ()
-    
-@admin.register(Seller)
-class SellerAdmin(admin.ModelAdmin):
+ 
+@admin.register(Seller, site=custom_admin_site)
+class SellerAdmin(BaseAdmin):
     list_display = ['first_name', 'last_name', 'user', 'store', 'created_at', 'updated_at']
-    search_fields = ['user', 'store']
-    list_filter = ['created_at', 'updated_at']
     fieldsets = (
-        (None, {'fields': ('first_name', 'last_name')}),
+        ('General', {'fields': ('first_name', 'last_name')}),
         ('User', {'fields': ('user',)}),
         ('Store', {'fields': ('store',)}),
     )
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('first_name', 'last_name', 'user', 'store')}
-        ),
-    )
     
-@admin.register(Buyer)
+@admin.register(Buyer, site=custom_admin_site)
 class BuyerAdmin(admin.ModelAdmin):
     list_display = ['user', 'created_at', 'updated_at']
     search_fields = ['user']
     list_filter = ['created_at', 'updated_at']
     
-@admin.register(Store)
+@admin.register(Store, site=custom_admin_site)
 class StoreAdmin(admin.ModelAdmin):
     list_display = ['name', 'description', 'rating']
     search_fields = ['name', 'description']
