@@ -62,45 +62,30 @@ class StoreSerializer(serializers.ModelSerializer):
         
 
 class SellerSerializer(serializers.ModelSerializer):
-    # id = serializers.UUIDField(read_only=True)
-    user_info = UserCreateSerializer(read_only=True)
-    # store = serializers.PrimaryKeyRelatedField(queryset=Store.objects.all())
+    user_id = serializers.UUIDField(write_only=True)
+    store = StoreSerializer()
     
     class Meta:
         model = Seller
-        fields = [
-            'id',
-            'first_name',
-            'last_name',
-            'user',
-            'store',
-            'user_info',
-        ]
+        fields = ['first_name', 'last_name', 'user_id', 'store']
         
-    # def validate_user(self, user_id):
-    #     """
-    #     Validate that the user exists and return the user instance.
-    #     """
-    #     try:
-    #         user = User.objects.get(id=user_id)
-    #         return user
-    #     except User.DoesNotExist:
-    #         raise serializers.ValidationError("User does not exist")
-
-    # def validate_store(self, store_id):
-    #     """
-    #     Validate that the store exists and return the store instance.
-    #     """
-    #     try:
-    #         store = Store.objects.get(id=store_id)
-    #         return store
-    #     except Store.DoesNotExist:
-    #         raise serializers.ValidationError("Store does not exist")
+    def validate_user_id(self, value):
+        """
+        Validate that the user exists and ensures that there is no seller 
+        created yet with that user id and return the user instance.
+        """
+        if not User.objects.filter(id=value).exists():
+            raise serializers.ValidationError("User does not exist")
+        
+        if Seller.objects.filter(user_id=value).exists():
+            raise serializers.ValidationError("User is already a seller")
+        
+        return value
     
-    
-    # def create(self, validated_data):
-    #     # Directly use the validated user and store instances
-    #     user = validated_data.pop('user')
-    #     store = validated_data.pop('store')
-    #     seller = Seller.objects.create(user=user, store=store, **validated_data)
-    #     return seller
+    def create(self, validated_data):
+        user_id = validated_data.pop('user_id')
+        store_data = validated_data.pop('store')
+        user = User.objects.get(id=user_id)
+        store = Store.objects.create(**store_data)
+        seller = Seller.objects.create(user=user, store=store, **validated_data)
+        return seller

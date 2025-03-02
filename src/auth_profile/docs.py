@@ -84,3 +84,29 @@ SELLERLIST = swagger_auto_schema(
     responses={200: serializers.SellerSerializer(many=True), 400: "Invalid data"}
 )
 
+SELLERCREATE = swagger_auto_schema(
+    tags=['seller'],
+    operation_summary='Create a seller.',
+    operation_description='This endpoint creates a new seller.',
+    operation_id='create_seller',
+    request_body=serializers.SellerSerializer,
+    responses={201: "Seller created successfully", 400: "Invalid data"}
+)
+
+SELLERRETRIEVE = swagger_auto_schema(
+    tags=['seller'],
+    operation_summary='Retrieve a seller.',
+    operation_description='This endpoint retrieves a seller by id.',
+    operation_id='retrieve_seller',
+    request_body=None,
+    responses={200: serializers.SellerSerializer, 400: "Invalid data"}
+)
+
+SELLERUPDATE = swagger_auto_schema(
+    tags=['seller'],
+    operation_summary='Update a seller.',
+    operation_description='This endpoint updates a seller by id.',
+    operation_id='update_seller',
+    request_body=serializers.SellerSerializer,
+    responses={204: "Seller updated successfully", 400: "Invalid data"}
+)
