@@ -108,9 +108,36 @@ class SellerViewSet(ModelViewSet):
     serializer_class = SellerSerializer
     queryset = Seller.objects.all()
     
-    # @swagger_auto_schema(request_body=SellerSerializer)
-    # def create(self, request, *args, **kwargs):
-    #     return super().create(request, *args, **kwargs)
+    @docs.SELLERLIST
+    def list(self, request, *args, **kwargs):
+        """Handles seller listing"""
+        return super().list(request, *args, **kwargs)
+    
+    @docs.SELLERCREATE
+    def create(self, request, *args, **kwargs):
+        """Handles seller creation"""
+        return super().create(request, *args, **kwargs)
+    
+    @docs.SELLERRETRIEVE
+    def retrieve(self, request, *args, **kwargs):
+        """Handles retrieving a seller by ID"""
+        return super().retrieve(request, *args, **kwargs)
+    
+    @docs.SELLERUPDATE
+    def update(self, request, *args, **kwargs):
+        """Handles complete seller update"""
+        response = super().update(request, *args, **kwargs)
+        return Response(response.data, status=status.HTTP_204_NO_CONTENT)
+    
+    @docs.swagger_auto_schema(auto_schema=None)
+    def destroy(self, request, *args, **kwargs):
+        """Disables seller deletion"""
+        raise MethodNotAllowed("DELETE method is not allowed.")
+    
+    @docs.swagger_auto_schema(auto_schema=None)
+    def partial_update(self, request, *args, **kwargs):
+        """Disables partial updates (PATCH)"""
+        raise MethodNotAllowed("PATCH method is not allowed.")
     
 
     
