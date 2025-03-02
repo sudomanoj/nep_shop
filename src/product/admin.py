@@ -4,10 +4,11 @@ from product.models import (Product,
                             ProductImage,
                             )
 from django.utils.html import format_html
+from auth_profile.admin import custom_admin_site
 
 # Register your models here.
 
-@admin.register(Category)
+@admin.register(Category, site=custom_admin_site)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = [
         'name',
@@ -26,7 +27,7 @@ class ProductImageInline(admin.TabularInline):
         return 'No Image'
     product_image.short_description = 'Preview Image'
     
-@admin.register(Product)
+@admin.register(Product, site=custom_admin_site)
 class ProductAdmin(admin.ModelAdmin):
     list_display = [
         'name',
