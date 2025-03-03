@@ -1,3 +1,5 @@
+import os
+from django.utils.text import slugify
 
 def unique_slugify(instance, slug):
     """
@@ -11,3 +13,13 @@ def unique_slugify(instance, slug):
         unique_slug = f'{slug}-{counter}'
         counter += 1
     return unique_slug
+
+
+def get_image_upload_path(instance, filename):
+    """
+    This function takes an instance and a filename and returns the path where the image
+    should be saved.
+    """
+    model_name = instance.__class__.__name__.lower()
+    return f"/uploads/{model_name}/{slugify(filename)}"
+    

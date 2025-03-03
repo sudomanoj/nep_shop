@@ -30,7 +30,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class UserViewSet(ViewSet):
-    permission_classes = [AllowAny,]
+    permission_classes = [IsAuthenticated,]
     
     @docs.CREATEUSER
     def create(self, request):  # Handles user creation

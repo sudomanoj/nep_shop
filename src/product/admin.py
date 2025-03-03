@@ -2,6 +2,7 @@ from django.contrib import admin
 from product.models import (Product,
                             Category,
                             ProductImage,
+                            Rating,
                             )
 from django.utils.html import format_html
 from auth_profile.admin import custom_admin_site
@@ -35,3 +36,20 @@ class ProductAdmin(admin.ModelAdmin):
         'price',
     ]
     inlines = [ProductImageInline]
+    
+
+@admin.register(Rating, site=custom_admin_site)
+class RatingAdmin(admin.ModelAdmin):
+    list_display = [
+        'rating',
+        'review',
+    ]
+    
+    list_filter = [
+        'rating',
+    ]
+    
+    search_fields = [
+        'rating',
+        'review',
+    ]
