@@ -1,8 +1,9 @@
 from django.db import models
 from common.models import TimeStampMixin
-from nep_shop.utils import unique_slugify
+from nep_shop.utils import unique_slugify, get_image_upload_path
 from uuid import uuid4
 from django.utils.text import slugify
+from django.core.validators import MinValueValidator, MaxValueValidator
 from auth_profile.models import (
     Buyer,
     Seller
@@ -50,7 +51,8 @@ class Rating(TimeStampMixin):
         )
     
     rating = models.PositiveIntegerField(
-        verbose_name='rating'
+        verbose_name='rating',
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
         )
     
     review = models.TextField(
@@ -60,19 +62,22 @@ class Rating(TimeStampMixin):
     buyer = models.ForeignKey(
         Buyer,
         on_delete=models.CASCADE,
-        related_name='ratings',
+        related_name='%(class)s_buyer',
         verbose_name='buyer'
+        )
+    
+    product = models.ForeignKey(
+        'Product',
+        on_delete=models.CASCADE,
+        related_name='%(class)s_product',
+        verbose_name='product'
         )
     
     def __str__(self):
         return str(self.rating)
     
-    def get_average_rating(self):
-        ratings = Rating.objects.filter(product=self.product)
-        total = 0
-        for rating in ratings:
-            total += rating.rating
-        return total / len(ratings)
+    class Meta:
+        unique_together = ['buyer', 'product']
     
     
 class Product(TimeStampMixin):
@@ -111,14 +116,14 @@ class Product(TimeStampMixin):
         )
     
     thumbnail = models.ImageField(
-        upload_to='product/thumbnails',
+        upload_to=get_image_upload_path,
         verbose_name='thumbnail'
         )
     
     seller = models.ForeignKey(
         Seller,
         on_delete=models.CASCADE,
-        related_name='products',
+        related_name='%(class)s_seller',
         verbose_name='seller'
         )
     
@@ -154,14 +159,14 @@ class ProductImage(TimeStampMixin):
         )
     
     image = models.ImageField(
-        upload_to='product/images',
+        upload_to=get_image_upload_path,
         verbose_name='image'
         )
     
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
-        related_name='images',
+        related_name='%(class)s_product',
         verbose_name='product'
         )
     

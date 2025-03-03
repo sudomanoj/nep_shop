@@ -93,3 +93,39 @@ DELETEPRODUCTIMAGE = swagger_auto_schema(
     request_body=None,
     responses={204: "Product image deleted successfully", 400: "Invalid data"}
 )
+
+CREATERATING = swagger_auto_schema(
+    tags=['rating'],
+    operation_summary='Create a rating.',
+    operation_description='This endpoint creates a new rating.',
+    operation_id='create_rating',
+    request_body=serializers.RatingSerializer,
+    responses={201: "Rating created successfully", 400: "Invalid data"}
+)
+
+LISTRATING = swagger_auto_schema(
+    tags=['rating'],
+    operation_summary='List all ratings.',
+    operation_description='This endpoint retrieves all ratings of the site.',
+    operation_id='list_ratings',
+    request_body=None,
+    responses={200: serializers.RatingSerializer(many=True), 400: "Invalid data"}
+)
+
+UPDATERATING = swagger_auto_schema(
+    tags=['rating'],
+    operation_summary='Update a rating.',
+    operation_description='This endpoint updates a rating by its id.',
+    operation_id='update_rating',
+    request_body=serializers.RatingSerializer,
+    responses={200: "Rating updated successfully", 400: "Invalid data"}
+)
+
+DELETERATING = swagger_auto_schema(
+    tags=['rating'],
+    operation_summary='Delete a rating.',
+    operation_description='This endpoint deletes a rating by its id.',
+    operation_id='delete_rating',
+    request_body=None,
+    responses={204: "Rating deleted successfully", 400: "Invalid data"}
+)

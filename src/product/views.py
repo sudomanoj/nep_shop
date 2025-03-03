@@ -8,11 +8,13 @@ from product.models import (
     Product,
     Category,
     ProductImage,
+    Rating,
 )
 from product.serializers import (
     CategorySerializer,
     ProductSerializer,
     ProductImageSerializer,
+    RatingSerializer,
 )
 from . import docs
 from product.filters import ProductFilter
@@ -25,7 +27,7 @@ from rest_framework.exceptions import MethodNotAllowed
 class CategoryViewSet(ListModelMixin, CreateModelMixin, UpdateModelMixin, GenericViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated,]
     
     @docs.LISTCATEGORY
     def list(self, request, *args, **kwargs):
@@ -48,7 +50,7 @@ class CategoryViewSet(ListModelMixin, CreateModelMixin, UpdateModelMixin, Generi
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated,]
     filterset_class = ProductFilter
     parser_classes = [parsers.MultiPartParser]
     
@@ -81,7 +83,7 @@ class ProductViewSet(ModelViewSet):
 class ProductImageViewSet(CreateModelMixin, UpdateModelMixin, DestroyModelMixin, GenericViewSet):
     queryset = ProductImage.objects.all()
     serializer_class = ProductImageSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated,]
     parser_classes = [parsers.MultiPartParser]
     
     @docs.CREATEPRODUCTIMAGE
@@ -103,7 +105,31 @@ class ProductImageViewSet(CreateModelMixin, UpdateModelMixin, DestroyModelMixin,
     
     
     
+class RatingViewSet(ListModelMixin, CreateModelMixin, UpdateModelMixin, DestroyModelMixin, GenericViewSet):
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
+    permission_classes = [IsAuthenticated,]
     
+    @docs.CREATERATING
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+    
+    @docs.LISTRATING
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
+    @docs.UPDATERATING
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+    
+    @docs.DELETERATING
+    def destroy(self, request, *args, **kwargs):
+        response = super().destroy(request, *args, **kwargs)
+        return Response(response.data, status=status.HTTP_204_NO_CONTENT)
+    
+    @docs.swagger_auto_schema(auto_schema=None)
+    def partial_update(self, request, *args, **kwargs):
+        raise MethodNotAllowed("PATCH method is not allowed on this endpoint")
     
     
     
