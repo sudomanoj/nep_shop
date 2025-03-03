@@ -4,10 +4,9 @@ from product.models import (Product,
                             ProductImage,
                             )
 from auth_profile.models import Seller
+from auth_profile.serializers import SellerSerializer
 
 class CategorySerializer(serializers.ModelSerializer):
-    id = serializers.UUIDField(read_only=True)
-    
     class Meta:
         model = Category
         fields = [
@@ -26,15 +25,11 @@ class ProductImageSerializer(serializers.ModelSerializer):
             'product',
         ]
     
-class ProductSerializer(serializers.ModelSerializer):
+class ProductAddSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
     seller = serializers.PrimaryKeyRelatedField(queryset=Seller.objects.all())
-    images = serializers.SerializerMethodField()
-    
-    
-    def get_images(self, obj):
-        images = obj.images.all()
-        return ProductImageSerializer(images, many=True).data
+    images = serializers.PrimaryKeyRelatedField(many=True, queryset=ProductImage.objects.all())
+    category = serializers.PrimaryKeyRelatedField(many=True, queryset=Category.objects.all())
     
     class Meta:
         model = Product
@@ -46,4 +41,25 @@ class ProductSerializer(serializers.ModelSerializer):
             'thumbnail',
             'seller',
             'images',
+            'category',
+        ]
+        
+class ProductSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(read_only=True)
+    seller = SellerSerializer()
+    images = ProductImageSerializer(many=True)
+    category = CategorySerializer(many=True)
+    
+    class Meta:
+        model = Product
+        fields = [
+            'id',
+            'name',
+            'description',
+            'price',
+            'stock',
+            'thumbnail',
+            'seller',
+            'images',
+            'category',
         ]

@@ -1,6 +1,8 @@
 from django.db import models
 from common.models import TimeStampMixin
+from nep_shop.utils import unique_slugify
 from uuid import uuid4
+from django.utils.text import slugify
 from auth_profile.models import (
     Buyer,
     Seller
@@ -20,18 +22,24 @@ class Category(TimeStampMixin):
         verbose_name='name'
         )
     
+    slug = models.SlugField(
+        max_length=255,
+        verbose_name='slug',
+        unique=True, 
+        editable=False
+        )
+    
     description = models.TextField(
         verbose_name='description'
         )
     
-    product = models.ManyToManyField(
-        'Product',
-        related_name='categories',
-        verbose_name='product'
-        )
-    
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slugify(self, slugify(self.name))
+        super().save(*args, **kwargs)
     
 class Rating(TimeStampMixin):
     
@@ -84,6 +92,13 @@ class Product(TimeStampMixin):
         verbose_name='description'
         )
     
+    slug = models.SlugField(
+        max_length=255,
+        verbose_name='slug',
+        unique=True,
+        editable=False
+        )
+    
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -107,8 +122,20 @@ class Product(TimeStampMixin):
         verbose_name='seller'
         )
     
+    category = models.ManyToManyField(
+        Category,
+        related_name='%(class)s_category',
+        verbose_name='category'
+    )
+    
     def __str__(self):
         return self.name
+    
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slugify(self, slugify(self.name))
+        super().save(*args, **kwargs)
     
     
 class ProductImage(TimeStampMixin):
