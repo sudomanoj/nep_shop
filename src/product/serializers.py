@@ -30,9 +30,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
     
 class ProductAddSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
-    seller = serializers.PrimaryKeyRelatedField(queryset=Seller.objects.all())
     images = serializers.PrimaryKeyRelatedField(many=True, queryset=ProductImage.objects.all())
-    category = serializers.PrimaryKeyRelatedField(many=True, queryset=Category.objects.all())
     
     class Meta:
         model = Product
